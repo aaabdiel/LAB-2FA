@@ -13,49 +13,78 @@ if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-// Incluir clases necesarias
-include("clases/mysql.inc.php");
-include("clases/RegistroUsuario.php");
-
 // Verificar si se envió el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Recoger y validar datos
+    $nombre = trim($_POST['nombre']);
+    $apellido = trim($_POST['apellido']);
+    $usuario = trim($_POST['usuario']);
+    $correo = trim($_POST['correo']);
+    $contraseña = $_POST['contraseña'];
     
-    // Crear instancia de mod_db
-    $db = new mod_db();
+    // Validaciones básicas
+    $errores = [];
     
-    // Crear instancia de RegistroUsuario
-    $registro = new RegistroUsuario($db, $_POST);
+    if (empty($nombre)) {
+        $errores[] = "El nombre es obligatorio";
+    }
     
-    // Validar los datos
-    if ($registro->validar()) {
-        // Intentar registrar el usuario
-        if ($registro->registrar()) {
-            // Obtener el ID del usuario registrado
-            $usuario_id = $registro->getIdInsertado();
-            $usuario = $_POST['usuario'];
-            
-            // Iniciar sesión automáticamente
-            session_start();
-            $_SESSION['autenticado'] = "SI";
-            $_SESSION['Usuario'] = $usuario;
-            $_SESSION['usuario_id'] = $usuario_id;
-            $_SESSION['autenticado_2fa'] = false;
-            
-            // Redirigir a activación 2FA
-            header("Location: activar_2fa.php?nuevo_registro=1");
+    if (empty($apellido)) {
+        $errores[] = "El apellido es obligatorio";
+    }
+    
+    if (empty($usuario)) {
+        $errores[] = "El nombre de usuario es obligatorio";
+    } elseif (strlen($usuario) < 4) {
+        $errores[] = "El nombre de usuario debe tener al menos 4 caracteres";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $usuario)) {
+        $errores[] = "El nombre de usuario solo puede contener letras, números y guiones bajos";
+    }
+    
+    if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = "El correo electrónico no es válido";
+    }
+    
+    if (empty($contraseña) || strlen($contraseña) < 6) {
+        $errores[] = "La contraseña debe tener al menos 6 caracteres";
+    }
+    
+    // Si no hay errores, proceder con el registro
+    if (empty($errores)) {
+        // Hash de la contraseña (importante para seguridad)
+        $contraseña_hash = password_hash($contraseña, PASSWORD_DEFAULT);
+        
+        // Preparar la consulta SQL
+        $sql = "INSERT INTO usuarios (Nombre, Apellido, Usuario, Correo, HashMagic) 
+                VALUES (?, ?, ?, ?, ?)";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssss", $nombre, $apellido, $usuario, $correo, $contraseña_hash);
+        
+        if ($stmt->execute()) {
+            // Redirigir al formulario con mensaje de éxito
+            header("Location: FormularioRegistro.php?success=1");
             exit();
         } else {
-            // Error al insertar en la base de datos
-            $error_message = "Error al guardar los datos en la base de datos";
+            // Verificar si es error de usuario o correo duplicado
             if ($conn->errno == 1062) {
-                $error_message = "El usuario o correo electrónico ya existen";
+                $error_message = $conn->error;
+                if (strpos($error_message, 'usuario') !== false) {
+                    header("Location: FormularioRegistro.php?error=El nombre de usuario ya está en uso");
+                } elseif (strpos($error_message, 'correo') !== false) {
+                    header("Location: FormularioRegistro.php?error=El correo electrónico ya está registrado");
+                } else {
+                    header("Location: FormularioRegistro.php?error=El usuario o correo electrónico ya existen");
+                }
+            } else {
+                header("Location: FormularioRegistro.php?error=Error al guardar los datos: " . $conn->error);
             }
-            header("Location: FormularioRegistro.php?error=" . urlencode($error_message));
             exit();
         }
+        
+        $stmt->close();
     } else {
-        // Si hay errores de validación, redirigir con mensajes
-        $errores = $registro->getErrores();
+        // Si hay errores, redirigir con mensajes de error
         header("Location: FormularioRegistro.php?error=" . urlencode(implode(", ", $errores)));
         exit();
     }
