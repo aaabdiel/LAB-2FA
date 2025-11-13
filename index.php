@@ -42,9 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenizado) {
 		if ($Logearme->logger()){
 				$Logearme->autenticar();
 			if ($Logearme->getIntentoLogin()){
-				
-				// ✅✅✅ COMIENZO DEL CÓDIGO 2FA CON MYSQLI DIRECTO ✅✅✅
-				
+			
 				// Crear conexión MySQLi directamente para 2FA
 				$servername = "localhost";
 				$username = "root";
@@ -154,7 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenizado) {
 					exit();
 				}
 				
-				// ✅✅✅ FIN DEL CÓDIGO 2FA CON MYSQLI DIRECTO ✅✅✅
 				
 			} else {
 				if (!$Logearme->registrarIntentos()) {
