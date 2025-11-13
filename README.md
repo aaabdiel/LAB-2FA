@@ -204,28 +204,6 @@ CREATE TABLE `intentos_login` (
 SHOW GRANTS FOR 'app_web_user'@'localhost';
 ```
 
-## **Capturas del Sistema**
-
-### **Interfaz de Usuario**
-![Formulario de Registro](images/registro.png)
-*Formulario de registro con validaciones en tiempo real*
-
-![Activación 2FA](images/activar-2fa.png)
-*Página de activación con código QR generado*
-
-![Verificación 2FA](images/verificacion-2fa.png)
-*Formulario de verificación de código de 6 dígitos*
-
-![Panel de Control](images/panel-control.png)
-*Panel principal después de autenticación exitosa*
-
-### **Base de Datos**
-![Estructura BD](images/estructura-bd.png)
-*Esquema de base de datos y relaciones*
-
-![Privilegios Usuario](images/privilegios-usuario.png)
-*Verificación de privilegios mínimos concedidos*
-
 ## **Tecnologías Implementadas**
 
 ### **Backend**
