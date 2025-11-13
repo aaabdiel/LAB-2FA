@@ -14,8 +14,8 @@ class mod_db
 		##### Setting SQL Vars #####
 		$sql_host = "localhost";
 		$sql_name = "company_info";
-		$sql_user = "app_web_utp";	
-		$sql_pass = "ClaveSegura2025!'";
+		$sql_user = "app_web_utp";          
+		$sql_pass = "ClaveSegura2025!";     
 
 		$dsn = "mysql:host=$sql_host;dbname=$sql_name;charset=utf8mb4";
 		try {
@@ -74,21 +74,6 @@ public function insertSeguro($tb_name, $data)
         return false;
     }
 }
-
-	/*public function update($tb_name, $string, $astriction)
-	{
-		$sql = "UPDATE $tb_name SET $string";
-		$this->executeQuery($sql, $astriction);
-	}*/
-
-	/*public function del($tb_name, $astriction)
-	{
-		$sql = "DELETE FROM $tb_name";
-		if ($astriction) {
-			$sql .= " WHERE $astriction"; // Agrega la restricción si existe
-		}
-		$this->executeQuery($sql);
-	}*/
 
 	public function query($string)
 	{
