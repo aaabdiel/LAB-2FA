@@ -13,8 +13,8 @@ if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== "SI") {
 
 // Crear conexión MySQLi directamente
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "app_web_utp";         
+$password = "ClaveSegura2025!";    
 $dbname = "company_info";
 
 $mysqli = new mysqli($servername, $username, $password, $dbname);
