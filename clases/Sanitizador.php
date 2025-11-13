@@ -1,13 +1,17 @@
 <?php
-class Sanitizador {  
-    // Sanitiza una cadena eliminando espacios y etiquetas HTML
+class Sanitizador {
+    
     public static function limpiarCadena($cadena) {
         return trim(strip_tags($cadena));
     }
 
-}//Sanitizador  // ← También cambia este comentario
+    // Métodos que usa RegistroUsuario
+    public static function texto($texto) {
+        return trim(strip_tags($texto));
+    }
 
-//$nombre = "<b>Juan</b> ";
-//$nombreLimpio = Sanitizador::limpiarCadena($nombre);  
-//echo "la salida es: ".$nombre."<br>";
+    public static function email($email) {
+        return filter_var(trim($email), FILTER_SANITIZE_EMAIL);
+    }
+}
 ?>

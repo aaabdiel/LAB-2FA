@@ -55,32 +55,34 @@ class RegistroUsuario {
 
     // MÉTODO 6: Validar duplicados en BD (responsabilidad única)
     private function validarDuplicados() {
-        $usuario = $this->datos['usuario'];
-        $correo = $this->datos['correo'];
+    $usuario = $this->datos['usuario'];
+    $correo = $this->datos['correo'];
 
-        // Verificar si usuario existe
-        $sql_usuario = "SELECT id FROM usuarios WHERE Usuario = ?";
-        $stmt_usuario = $this->db->prepare($sql_usuario);
-        $stmt_usuario->bind_param("s", $usuario);
+    try {
+        // Verificar si usuario existe - USANDO PDO
+        $sql_usuario = "SELECT id FROM usuarios WHERE Usuario = :usuario";
+        $stmt_usuario = $this->db->getConexion()->prepare($sql_usuario);
+        $stmt_usuario->bindParam(':usuario', $usuario, PDO::PARAM_STR);
         $stmt_usuario->execute();
         
-        if ($stmt_usuario->get_result()->num_rows > 0) {
+        if ($stmt_usuario->rowCount() > 0) {
             $this->errores[] = "El nombre de usuario ya está en uso";
         }
 
-        // Verificar si correo existe
-        $sql_correo = "SELECT id FROM usuarios WHERE Correo = ?";
-        $stmt_correo = $this->db->prepare($sql_correo);
-        $stmt_correo->bind_param("s", $correo);
+        // Verificar si correo existe - USANDO PDO
+        $sql_correo = "SELECT id FROM usuarios WHERE Correo = :correo";
+        $stmt_correo = $this->db->getConexion()->prepare($sql_correo);
+        $stmt_correo->bindParam(':correo', $correo, PDO::PARAM_STR);
         $stmt_correo->execute();
         
-        if ($stmt_correo->get_result()->num_rows > 0) {
+        if ($stmt_correo->rowCount() > 0) {
             $this->errores[] = "El correo electrónico ya está registrado";
         }
 
-        $stmt_usuario->close();
-        $stmt_correo->close();
+    } catch (PDOException $e) {
+        $this->errores[] = "Error al verificar duplicados: " . $e->getMessage();
     }
+}
 
     // MÉTODO PRINCIPAL: Coordinar todas las validaciones
     public function validar() {
