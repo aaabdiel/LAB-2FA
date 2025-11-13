@@ -267,7 +267,7 @@ SHOW GRANTS FOR 'app_web_user'@'localhost';
 
 
 - **Curso**: Ingeniería Web
-- ** Instructora**: Ing. Irina Fong
+- **Instructora** : Ing. Irina Fong
 - **Período Académico**: II Semestre 2025
 - **Fecha de Entrega**: 12 de noviembre de 2025
 
